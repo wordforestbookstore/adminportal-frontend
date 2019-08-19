@@ -4,7 +4,7 @@
   <v-row><v-divider light></v-divider></v-row>
   <v-row class="pt-3">
     <v-col cols="3">
-      <v-img src="../assets/logo.png">
+      <v-img src="../assets/logo.png"></v-img>
     </v-col>
   </v-row>
   <v-row justify="center">
@@ -54,7 +54,7 @@ export default {
     login() {
       let data = { 'username': '123' }; 
       this.$emit('userlogin', data);
-      this.$router.push('/index');
+      this.$router.push('/book');
     }
   }
 }

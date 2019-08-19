@@ -2,17 +2,17 @@
   <v-app style="background-color: white">
     <v-app-bar app v-if="isLogin" class="red lighten-1" dark>
       <v-toolbar-title class="headline text-uppercase">
-        <router-link class="white--text" to="/index">管理系统</router-link>
+        <router-link class="white--text" to="/book">管理系统</router-link>
       </v-toolbar-title>
       <v-menu offset-y open-on-hover class="ml-5">
         <template v-slot:activator="{ on }">
           <v-btn text dark v-on="on">书籍</v-btn>
         </template>
         <v-list>
-          <v-list-item :key="add" @click="" to="/add">
+          <v-list-item key="add" to="/book/add">
             <v-list-item-title>新增书籍</v-list-item-title>
           </v-list-item>
-          <v-list-item :key="list" @click="" to="/list">
+          <v-list-item key="list" to="/book/bookList">
             <v-list-item-title>书籍列表</v-list-item-title>
           </v-list-item>
         </v-list>

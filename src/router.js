@@ -6,18 +6,29 @@ import { checkLogin } from './common/index'
 Vue.use(VueRouter);
 
 export default new VueRouter({
+  mode: 'history',
   routes: [
     {
-      path: '/login',
+      path: '/',
       component: resolve => require(['./components/login.vue'], resolve)
     },
     {
-      path: '/',
-      redirect: '/login'
+      path: '/login',
+      redirect: '/'
     },
     {
-      path: '/index',
+      path: '/book',
       component: resolve => require(['./components/index.vue'], resolve),
+      children: [
+        {
+          path: 'add',
+          component: resolve => require(['./components/add.vue'], resolve)
+        },
+        {
+          path: 'bookList',
+          component: resolve => require(['./components/booklist.vue'], resolve)
+        }
+      ],
       beforeEnter: (to, from, next) => {
         if (checkLogin()) {
           next();
