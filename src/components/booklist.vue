@@ -2,17 +2,23 @@
   <v-container>
     <v-card flat>
       <v-card-title>
+        <v-col cols="2">
+          <v-select label="每页元素" v-model="itemsPerPage" :items="rangList" hide-details>
+          </v-select>
+        </v-col>
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
           append-icon="search"
           label="搜索"
-          single-line
           hide-details
         ></v-text-field>
       </v-card-title>
       <v-data-table
         locale="zh-Hans"
+        :page.sync="page"
+        :items-per-page="itemsPerPage"
+        @page-count="pageCount = $event"
         :headers="headers"
         :items="booklist"
         :search="search"
@@ -34,7 +40,12 @@
         </template>
 
         <template v-slot:footer>
-          
+          <v-container>
+            <v-row>
+              <v-col cols="3" align-self="center" class="caption">{{ getRange() }}</v-col>
+              <v-col cols="6"><v-pagination v-model="page" :length="pageCount"></v-pagination></v-col>
+            </v-row>
+          </v-container>
         </template>
 
         <template v-slot:no-results>
@@ -52,6 +63,8 @@ import { getBookList } from '../common/bookservice'
 export default {
   name: 'bookList',
   data: () => ({
+    rangList: [ 5, 10, 15, 20 ],
+    page: 1, pageCount: 0, itemsPerPage: 5,
     search: '',
     selected: [],
     headers: [
@@ -59,36 +72,42 @@ export default {
         text: '书名',
         value: 'title',
         sortable: false,
-        // width: '150px'
       },
       { text: '作者', value: 'author', sortable: false, },
       { text: '分类', value: 'category', sortable: false, },
       {
-        text: '展示价格',
+        text: '展示价',
         value: 'p1',
-        width: '100px'
+        width: '12%'
       },
       {
         text: '售价',
         value: 'p2',
-        width: '100px'
+        width: '11%'
       },
       { 
-        text: '是否展示', 
+        text: '展示?', 
         value: 'active', 
         align: 'center',
         sortable: false,
+        width: '10%'
       },
       { 
         text: '操作', 
         value: 'action', 
         align: 'center',
-        sortable: false
+        sortable: false,
+        width: '13%'
       },
     ],
     booklist: []
   }),
   methods: {
+    getRange() {
+      let l = (this.page - 1) * this.itemsPerPage + 1;
+      let r = this.page * this.itemsPerPage;
+      return `共 ${this.booklist.length} 个元素中第 ${l} 个到第 ${Math.min(r, this.booklist.length)} 个`;
+    },
     getUrl(title) {
       return `/book/bookInfo?id=${title}`;
     }
