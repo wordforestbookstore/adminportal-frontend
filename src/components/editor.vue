@@ -1,8 +1,8 @@
 <template>
   <v-form ref="form" v-model="valid">
-    <v-text-field v-model="book.name"
+    <v-text-field v-model="book.title"
       label="* 书名" required></v-text-field>
-    <v-text-field v-model="book.writer"
+    <v-text-field v-model="book.author"
       label="* 作者" required></v-text-field>
 
     <v-text-field v-model="book.isbn"
@@ -25,11 +25,11 @@
         v-model="book.date" @input="dateMenu = false"></v-date-picker>
     </v-menu>
 
-    <v-select v-model="book.lang" label="语言" single-line
+    <v-select v-model="book.language" label="语言" single-line
       :items="langList" item-text="text" item-value="value"
     ></v-select>
 
-    <v-select v-model="book.kind" label="* 分类" single-line
+    <v-select v-model="book.category" label="* 分类" single-line
       :items="kindList" item-text="text" item-value="value"
     ></v-select>
 
@@ -116,7 +116,7 @@
     </v-slider>
 
     <v-slider label="库存量"
-      v-model="book.stock"
+      v-model="book.in_stock_number"
       class="align-center pt-2"
       max="1000" min="0"
       hide-details>
@@ -125,7 +125,7 @@
       </template>
       <template v-slot:append>
         <v-text-field
-          v-model="book.stock"
+          v-model="book.in_stock_number"
           class="mt-0 pt-0"
           hide-details
           single-line
@@ -176,13 +176,13 @@ export default {
     dateMenu: false,
     langList: LangList, kindList: KindList, formatList: FormatList,
     book: {
-      name: '', writer: '',
+      title: '', author: '',
       publisher: '', date: '',
-      lang: 'cn', kind: '',
+      language: 'cn', category: '',
       isbn: '', format: 'paperback',
       pages: 100,
       weight: 100, listprice: 1,
-      ourprice: 1, stock: 0,
+      ourprice: 1, in_stock_number: 0,
       active: 'true', 
       description: '',
       image: null

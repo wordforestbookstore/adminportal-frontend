@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { userLogin, userLogout } from './common/index'
+import { userLogin, userLogout } from './common/userservice'
 
 export default {
   name: 'App',

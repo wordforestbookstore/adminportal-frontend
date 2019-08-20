@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import { checkLogin } from './common/index'
+import { checkLogin } from './common/userservice'
 
 Vue.use(VueRouter);
 
@@ -27,6 +27,9 @@ export default new VueRouter({
         {
           path: 'bookList',
           component: resolve => require(['./components/booklist.vue'], resolve)
+        },
+        {
+          path: 'bookInfo'
         }
       ],
       beforeEnter: (to, from, next) => {
