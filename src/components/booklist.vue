@@ -3,7 +3,7 @@
     <v-card flat>
       <v-card-title>
         <v-col cols="2">
-          <v-select label="每页元素" v-model="itemsPerPage" :items="rangList" hide-details>
+          <v-select label="每页元素" v-model="itemsPerPage_" :items="rangList" hide-details>
           </v-select>
         </v-col>
         <v-spacer></v-spacer>
@@ -63,8 +63,8 @@ import { getBookList } from '../common/bookservice'
 export default {
   name: 'bookList',
   data: () => ({
-    rangList: [ 5, 10, 15, 20 ],
-    page: 1, pageCount: 0, itemsPerPage: 5,
+    rangList: [ 5, 10, 15, 20, '全部' ],
+    page: 1, pageCount: 0, itemsPerPage: 5, itemsPerPage_: 5,
     search: '',
     selected: [],
     headers: [
@@ -102,6 +102,15 @@ export default {
     ],
     booklist: []
   }),
+  watch: {
+    itemsPerPage_(newv, oldv) {
+      if (newv === '全部') {
+        this.itemsPerPage = this.booklist.length + 1;
+      } else {
+        this.itemsPerPage = newv;
+      }
+    }
+  },
   methods: {
     getRange() {
       let l = (this.page - 1) * this.itemsPerPage + 1;
