@@ -21,6 +21,11 @@
       <v-btn text @click="onlogout"><span>退出</span></v-btn>
     </v-app-bar>
 
+    <v-snackbar top v-model="snackbar.isShow" :timeout="5000" color="error">
+      {{ snackbar.text }}
+      <v-btn color="white" text @click="snackbar.isShow = false">Close</v-btn>
+    </v-snackbar>
+
     <v-content>
       <router-view @userlogin="onlogin"></router-view>
     </v-content>
@@ -30,6 +35,7 @@
 
 <script>
 import { userLogin, userLogout } from './common/userservice'
+import { hasOwn } from './util'
 
 export default {
   name: 'App',
@@ -37,12 +43,21 @@ export default {
 
   },
   data: () => ({
-    isLogin: false
+    isLogin: false,
+    snackbar: {
+      isShow: false, text: '登录失败'
+    }
   }),
   methods: {
-    onlogin(data) {
-      this.isLogin = true;
-      userLogin(data);
+    async onlogin(data) {
+      let res = await userLogin(data);
+      if (hasOwn(res, 'status') && res.status === 'error') {
+        this.snackbar.text = res.message;
+        this.snackbar.isShow = true;
+      } else {
+        this.isLogin = true;
+        this.$router.push('/book');
+      }
     },
     onlogout() {
       this.isLogin = false;

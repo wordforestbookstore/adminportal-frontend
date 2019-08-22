@@ -11,26 +11,23 @@
     <v-col cols="6">
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-text-field
+          autofocus
           v-model="username"
-          :rules="nameRules"
+          :rules="usernameRules" validate-on-blur
           label="用户名"
-          required
+          required clearable
         ></v-text-field>
 
         <v-text-field
           v-model="password"
-          :rules="passwordRules"
+          :rules="passwordRules" validate-on-blur
+          type="password"
           label="密码"
-          required
+          required clearable
+          @keyup.enter="login"
         ></v-text-field>
 
-        <v-btn
-          :disabled="!valid"
-          color="success"
-          class="mr-4"
-          block
-          @click="login"
-        >登录</v-btn>
+        <v-btn color="success" block @click="login">登录</v-btn>
       </v-form>
     </v-col>
   </v-row>
@@ -38,23 +35,20 @@
 </template>
 
 <script>
+import { UsernameRules, PasswordRules } from '../common/rules'
+
 export default {
   name: 'login',
   data: () => ({
     valid: true, username: '', password: '',
-    nameRules: [
-      v => !!v || '用户名不能为空',
-      v => (v && v.length <= 16) || '用户名过长',
-    ],
-    passwordRules: [
-      v => !!v || '密码不能为空'
-    ]
+    usernameRules: UsernameRules,
+    passwordRules: PasswordRules
   }),
   methods: {
     login() {
-      let data = { 'username': '123' }; 
+      if (!this.$refs.form.validate()) return ;
+      let data = { 'username': this.username, password: this.password }; 
       this.$emit('userlogin', data);
-      this.$router.push('/book');
     }
   }
 }
