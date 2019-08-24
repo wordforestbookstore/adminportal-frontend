@@ -12,6 +12,7 @@ async function userLogin(obj) {
       let res = await api.get('/login');
       return user = res.data;
     } catch(err) {
+      api.removeCookies('login');
       return { status: 'error' };
     }
   } else {
@@ -32,6 +33,7 @@ async function userLogin(obj) {
 }
 
 function userLogout() {
+  api.post('/logout').catch(() => {});
   user = null;
   api.removeCookies('login');
   return true;
