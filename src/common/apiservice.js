@@ -1,15 +1,28 @@
 import Vue from 'vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import VueCookies from 'vue-cookies'
 import { API_URL } from './config'
 
 const apiService = {
   init() {
     Vue.use(VueAxios, axios);
+    Vue.use(VueCookies);
     Vue.axios.defaults.baseURL = API_URL;
+    Vue.axios.defaults.withCredentials = true;
   },
 
-  query(url, params = {}) {
+  setCookies(key, val) {
+    Vue.prototype.$cookies.set(key, val, '30d');
+  },
+  removeCookies(key) {
+    Vue.prototype.$cookies.remove(key);
+  },
+  isKey(key) {
+    return Vue.prototype.$cookies.isKey(key);
+  },
+
+  get(url, params = {}) {
     return Vue.axios.get(url, params);
   },
 

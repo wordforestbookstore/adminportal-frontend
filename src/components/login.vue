@@ -31,24 +31,51 @@
       </v-form>
     </v-col>
   </v-row>
+
+  <v-snackbar top v-model="snackbar.isShow" :timeout="5000" color="error">
+    {{ snackbar.text }}
+    <v-btn color="white" text @click="snackbar.isShow = false">Close</v-btn>
+  </v-snackbar>
+
 </v-container>
 </template>
 
 <script>
 import { UsernameRules, PasswordRules } from '../common/rules'
+import { userLogin, checkLogin } from '../common/userservice'
+import { hasOwn } from '../util'
 
 export default {
   name: 'login',
   data: () => ({
     valid: true, username: '', password: '',
     usernameRules: UsernameRules,
-    passwordRules: PasswordRules
+    passwordRules: PasswordRules,
+    snackbar: {
+      isShow: false, text: '登录失败'
+    }
   }),
   methods: {
-    login() {
+    async login() {
       if (!this.$refs.form.validate()) return ;
+
       let data = { 'username': this.username, password: this.password }; 
-      this.$emit('userlogin', data);
+      let res = await userLogin(data);
+      if (hasOwn(res, 'status') && res.status === 'error') {
+        this.snackbar.text = res.message || '登录失败';
+        this.snackbar.isShow = true;
+      } else {
+        this.$router.push('book');
+      }
+
+    }
+  },
+  async beforeRouteEnter(to, from, next) {
+    let res = await userLogin();
+    if (hasOwn(res, 'status')) {
+      next();
+    } else {
+      next('book');
     }
   }
 }
