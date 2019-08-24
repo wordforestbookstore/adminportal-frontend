@@ -12,10 +12,13 @@ const apiService = {
     Vue.axios.defaults.withCredentials = true;
   },
 
-  setCookies(key, val) {
+  setCookie(key, val) {
     Vue.prototype.$cookies.set(key, val, '30d');
   },
-  removeCookies(key) {
+  getCookie(key) {
+    return Vue.prototype.$cookies.get(key);
+  },
+  removeCookie(key) {
     Vue.prototype.$cookies.remove(key);
   },
   isKey(key) {
