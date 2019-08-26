@@ -135,7 +135,7 @@ export default {
     booklist: []
   }),
   watch: {
-    itemsPerPage_(newv, oldv) {
+    itemsPerPage_(newv) {
       this.page = 1;
       if (newv === '全部') {
         this.itemsPerPage = this.booklist.length + 1;

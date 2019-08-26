@@ -42,7 +42,7 @@
 
 <script>
 import { UsernameRules, PasswordRules } from '../common/rules'
-import { userLogin, checkLogin } from '../common/userservice'
+import { userLogin } from '../common/userservice'
 import { hasOwn } from '../util'
 
 export default {
