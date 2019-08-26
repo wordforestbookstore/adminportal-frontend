@@ -31,7 +31,11 @@ async function userLogin(obj) {
     } catch(err) {
       api.removeCookie('login');
       if (err.response) {
-        return { status: 'error', message: '登录失败' };
+        if (err.response.status === 401) {
+          return { status: 'error', message: '权限不足' };  
+        } else {
+          return { status: 'error', message: '登录失败' };
+        }
       } else {
         return { status: 'error', message: '服务器连接失败' };
       }
