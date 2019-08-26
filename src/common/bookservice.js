@@ -1,10 +1,17 @@
 import api from './apiservice'
 
-function addBook() {
-
+async function addBook(obj) {
+  try {
+    let res = await api.post('/book', obj, {
+      params: { cookie: api.getCookie('login') }
+    });
+    return res.data;
+  } catch(err) {
+    return { status: 'error', message: '上传失败' };
+  }
 }
 
-function editBook(id) {
+function editBook(id, obj) {
 
 }
 

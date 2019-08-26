@@ -30,7 +30,7 @@
         </template>
 
         <template v-slot:item.active="{ item }">
-          <v-icon v-if="item.active === 'true'">done</v-icon>
+          <v-icon v-if="item.active === true">done</v-icon>
           <v-icon v-else>clear</v-icon>
         </template>
 
@@ -139,7 +139,7 @@ export default {
   created() {
     getBookList(1, 10000000)
       .then(function(data) {
-        if (hasOwn(data, 'status')) {
+        if (hasOwn(data, 'status') && data.status === 'error') {
           return ;
         }
         for (let item of data) {

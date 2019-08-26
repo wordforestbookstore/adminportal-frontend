@@ -1,11 +1,11 @@
 <template>
   <v-form ref="form" v-model="valid">
-    <v-text-field v-model="book.title"
+    <v-text-field v-model="book.title" :rules="rules.title"
       label="* 书名" required></v-text-field>
-    <v-text-field v-model="book.author"
+    <v-text-field v-model="book.author" :rules="rules.author"
       label="* 作者" required></v-text-field>
 
-    <v-text-field v-model="book.isbn"
+    <v-text-field v-model="book.isbn" type="number"
       label="ISBN"></v-text-field>
 
     <v-text-field v-model="book.publisher"
@@ -17,12 +17,12 @@
       transition="scale-transition" offset-y
       full-width max-width="290px" min-width="290px">
       <template v-slot:activator="{ on }">
-        <v-text-field v-on="on"
-          v-model="book.date" label="出版日期"
+        <v-text-field v-on="on" readonly
+          v-model="book.publicationDate" label="出版日期"
         ></v-text-field>
       </template>
       <v-date-picker color="red lighten-1" locale="zh-cn"
-        v-model="book.date" @input="dateMenu = false"></v-date-picker>
+        v-model="book.publicationDate" @input="dateMenu = false"></v-date-picker>
     </v-menu>
 
     <v-select v-model="book.language" label="语言" single-line
@@ -30,6 +30,7 @@
     ></v-select>
 
     <v-select v-model="book.category" label="* 分类" single-line
+      :rules="rules.category"
       :items="kindList" item-text="text" item-value="value"
     ></v-select>
 
@@ -38,7 +39,7 @@
     ></v-select>
 
     <v-slider label="总页数"
-      v-model="book.pages"
+      v-model="book.numberOfPages"
       class="align-center py-2"
       max="2000" min="1"
       hide-details>
@@ -47,7 +48,7 @@
       </template>
       <template v-slot:append>
         <v-text-field
-          v-model="book.pages"
+          v-model="book.numberOfPages"
           class="mt-0 pt-0"
           hide-details
           single-line
@@ -59,13 +60,13 @@
     </v-slider>
 
     <v-slider label="邮寄重量"
-      v-model="book.weight"
+      v-model="book.shippingWeight"
       class="align-center py-2"
       max="2000" min="1"
       hide-details>
       <template v-slot:append>
         <v-text-field
-          v-model="book.weight"
+          v-model="book.shippingWeight"
           class="mt-0 pt-0"
           hide-details
           single-line
@@ -77,13 +78,13 @@
     </v-slider>
 
     <v-slider label="展示价格"
-      v-model="book.listprice"
+      v-model="book.listPrice"
       class="align-center py-2"
       max="1000" min="0"
       hide-details>
       <template v-slot:append>
         <v-text-field
-          v-model="book.listprice"
+          v-model="book.listPrice"
           class="mt-0 pt-0"
           hide-details
           single-line
@@ -95,7 +96,7 @@
     </v-slider>
 
     <v-slider label="售价"
-      v-model="book.ourprice"
+      v-model="book.ourPrice"
       class="align-center py-2"
       max="1000" min="0"
       hide-details>
@@ -104,7 +105,7 @@
       </template>
       <template v-slot:append>
         <v-text-field
-          v-model="book.ourprice"
+          v-model="book.ourPrice"
           class="mt-0 pt-0"
           hide-details
           single-line
@@ -116,7 +117,7 @@
     </v-slider>
 
     <v-slider label="库存量"
-      v-model="book.in_stock_number"
+      v-model="book.inStockNumber"
       class="align-center pt-2"
       max="1000" min="0"
       hide-details>
@@ -125,7 +126,7 @@
       </template>
       <template v-slot:append>
         <v-text-field
-          v-model="book.in_stock_number"
+          v-model="book.inStockNumber"
           class="mt-0 pt-0"
           hide-details
           single-line
@@ -137,8 +138,8 @@
     </v-slider>
 
     <v-radio-group v-model="book.active" row label="书籍状态">
-      <v-radio label="展示" key="true" value="true"></v-radio>
-      <v-radio label="隐藏" key="false" value="false"></v-radio>
+      <v-radio label="展示" key="true" :value="true"></v-radio>
+      <v-radio label="隐藏" key="false" :value="false"></v-radio>
     </v-radio-group>
 
     <v-textarea ref="bookarea" v-model="book.description" label="书籍简介"
@@ -159,31 +160,44 @@
 
     <v-btn color="primary" large @click="submitForm">上传</v-btn>
     <v-btn color="error ml-5" large to="/book">取消</v-btn>
+
+    <v-snackbar top v-model="snackbar.isShow" :timeout="5000" color="error">
+      {{ snackbar.text }}
+      <v-btn color="white" text @click="snackbar.isShow = false">Close</v-btn>
+    </v-snackbar>
   </v-form>
 </template>
 
 <script>
 import { LangList, KindList, FormatList } from '../common/config'
+import { addBook } from '../common/bookservice'
+import { BookRules } from '../common/rules'
+import { hasOwn } from '../util'
 import Stackedit from 'stackedit-js'
 
 export default {
   name: 'bookInfoEditor',
   data: () => ({
+    snackbar: {
+      isShow: false, text: ''
+    },
     valid: true,
     rules: {
-      
+      title: BookRules.title,
+      author: BookRules.author,
+      category: BookRules.category
     },
     dateMenu: false,
     langList: LangList, kindList: KindList, formatList: FormatList,
     book: {
       title: '', author: '',
-      publisher: '', date: '',
+      publisher: '', publicationDate: '',
       language: 'cn', category: '',
       isbn: '', format: 'paperback',
-      pages: 100,
-      weight: 100, listprice: 1,
-      ourprice: 1, in_stock_number: 0,
-      active: 'true', 
+      numberOfPages: 100,
+      shippingWeight: 100, listPrice: 1,
+      ourPrice: 1, inStockNumber: 0,
+      active: true, 
       description: '',
       image: null
     }
@@ -203,12 +217,19 @@ export default {
         this.book.description = file.content.text;
       });
     },
-    submitForm() {
-
-      this.$router.push('/book/bookList');
-
+    async submitForm() {
+      let res = await addBook(this.book);
+      if (hasOwn(res, 'status') && res.status === 'error') {
+        this.snackbar.text = '上传失败';
+        this.snackbar.isShow = true;
+      } else {
+        this.$router.push('/book/bookList');
+      }
     }
   },
+  props: {
+    updateID: null
+  }
 }
 </script>
 
