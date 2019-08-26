@@ -35,8 +35,12 @@
         </template>
 
         <template v-slot:item.action="{ item }">
-          <v-icon class="mr-2" @click="(item) => {}">edit</v-icon>
-          <v-icon @click="(item) => {}">delete</v-icon>
+          <v-btn icon class="mr-2" @click="goEdit(item.id)">
+            <v-icon>edit</v-icon>
+          </v-btn>
+          <v-btn icon @click.stop="goDelete(item)">
+            <v-icon>delete</v-icon>
+          </v-btn>
         </template>
 
         <template v-slot:footer>
@@ -44,6 +48,9 @@
             <v-row>
               <v-col cols="3" align-self="center" class="caption">{{ getRange() }}</v-col>
               <v-col cols="6"><v-pagination v-model="page" :length="pageCount"></v-pagination></v-col>
+              <v-col cols="3" class="text-end">
+                <v-btn color="error" @click="selectDelete">删除选中项</v-btn>
+              </v-col>
             </v-row>
           </v-container>
         </template>
@@ -52,19 +59,35 @@
           <span>没有搜索到匹配的结果</span>
         </template>
 
+        <template v-slot:no-data>
+          <span>数据库中没有书籍信息</span>
+        </template>
+
       </v-data-table>
     </v-card>
+
+    <v-dialog v-model="dialog" width="300">
+      <v-card>
+        <v-card-title class="title" primary-title>确认删除？</v-card-title>
+        <v-card-actions>
+          <div class="flex-grow-1"></div>
+          <v-btn color="error" text @click="confirmDelete">确认</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
-import { getBookList } from '../common/bookservice'
+import { getBookList, deleteBook } from '../common/bookservice'
 import { KindMap } from '../common/config'
 import { hasOwn } from '../util'
+import { Promise } from 'q';
 
 export default {
   name: 'bookList',
   data: () => ({
+    dialog: false, deleteids: [],
     rangList: [ 5, 10, 15, 20, '全部' ],
     page: 1, pageCount: 0, itemsPerPage: 10, itemsPerPage_: 10,
     search: '',
@@ -99,7 +122,7 @@ export default {
         value: 'active', 
         align: 'center',
         sortable: false,
-        width: '10%'
+        width: '7%'
       },
       { 
         text: '操作', 
@@ -125,10 +148,36 @@ export default {
     getRange() {
       let l = (this.page - 1) * this.itemsPerPage + 1;
       let r = this.page * this.itemsPerPage;
+      if (this.booklist.length == 0) l = 0;
       return `共 ${this.booklist.length} 个元素中第 ${l} 个到第 ${Math.min(r, this.booklist.length)} 个`;
     },
     getUrl(id) {
       return `/book/bookInfo?id=${id}`;
+    },
+    goEdit(id) {
+      this.$router.push(`/book/updateBook?id=${id}`)
+    },
+    goDelete(item) {
+      this.deleteids = [item];
+      this.dialog = true;
+    },
+    selectDelete() {
+      this.deleteids = this.selected;
+      this.dialog = true;
+    },
+    confirmDelete() {
+      this.dialog = false;
+      let arr = []
+      for (let item of this.deleteids) {
+        arr.push(deleteBook(item.id));
+      }
+      Promise.all(arr).then(function() {
+        for (let item of this.deleteids) {
+          const index = this.booklist.indexOf(item)
+          this.booklist.splice(index, 1);
+        }
+        this.deleteids = [];
+      }.bind(this));
     },
     cnKind(val) {
       if (!val) return '';

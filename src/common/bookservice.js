@@ -11,8 +11,21 @@ async function addBook(obj) {
   }
 }
 
-function editBook(id, obj) {
+async function editBook(id, obj) {
 
+}
+
+async function deleteBook(id) {
+  try {
+    let res = await api.delete(`/book/${id}`, {
+      params: { 
+        cookie: api.getCookie('login')
+      }
+    });
+    return res.data;
+  } catch(err) {
+    return { status: 'error' };
+  }
 }
 
 async function getBookList(l, r) {
@@ -42,6 +55,7 @@ async function getBookInfo(id) {
 export {
   addBook,
   editBook,
+  deleteBook,
   getBookList,
   getBookInfo
 };
