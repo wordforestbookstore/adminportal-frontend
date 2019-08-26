@@ -80,7 +80,7 @@
     <v-slider label="展示价格"
       v-model="book.listPrice"
       class="align-center py-2"
-      max="1000" min="0"
+      max="1000" min="0" step="0.01"
       hide-details>
       <template v-slot:append>
         <v-text-field
@@ -98,7 +98,7 @@
     <v-slider label="售价"
       v-model="book.ourPrice"
       class="align-center py-2"
-      max="1000" min="0"
+      max="1000" min="0" step="0.01"
       hide-details>
       <template v-slot:label>
         <span class="pr-4 mr-4">售价</span>
@@ -170,7 +170,7 @@
 
 <script>
 import { LangList, KindList, FormatList } from '../common/config'
-import { addBook } from '../common/bookservice'
+import { addBook, editBook, getBookInfo } from '../common/bookservice'
 import { BookRules } from '../common/rules'
 import { hasOwn } from '../util'
 import Stackedit from 'stackedit-js'
@@ -178,6 +178,7 @@ import Stackedit from 'stackedit-js'
 export default {
   name: 'bookInfoEditor',
   data: () => ({
+    updateID: null,
     snackbar: {
       isShow: false, text: ''
     },
@@ -218,17 +219,34 @@ export default {
       });
     },
     async submitForm() {
-      let res = await addBook(this.book);
+      let res = null;
+      if (this.updateID !== null) {
+        res = await editBook(this.updateID, this.book);
+      } else {
+        res = await addBook(this.book);
+      }
       if (hasOwn(res, 'status') && res.status === 'error') {
-        this.snackbar.text = '上传失败';
+        this.snackbar.text = res.message;
         this.snackbar.isShow = true;
       } else {
         this.$router.push('/book/bookList');
       }
+    },
+    async init(id) {
+      this.updateID = id;
+      let data = await getBookInfo(id);
+      if (hasOwn(data, 'status') && data.status === 'error') {
+        return ;
+      }
+      this.book = data;
     }
   },
-  props: {
-    updateID: null
+  created() {
+    if (hasOwn(this.$route.query, 'id')) {
+      this.init(this.$route.query.id);
+    } else {
+      this.updateID = null;
+    }
   }
 }
 </script>

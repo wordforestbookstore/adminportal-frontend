@@ -12,7 +12,16 @@ async function addBook(obj) {
 }
 
 async function editBook(id, obj) {
-
+  try {
+    let res = await api.put(`/book/${id}`, obj, {
+      params: {
+        cookie: api.getCookie('login')
+      }
+    });
+    return res.data;
+  } catch(err) {
+    return { status: 'error', message: '更新失败' };
+  }
 }
 
 async function deleteBook(id) {
