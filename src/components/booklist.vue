@@ -26,7 +26,7 @@
         item-key="title"
         show-select hide-default-footer>
         <template v-slot:item.title="{ item }">
-          <router-link :to="getUrl(item.title)">{{ item.title }}</router-link>
+          <router-link :to="getUrl(item.id)">{{ item.title }}</router-link>
         </template>
 
         <template v-slot:item.active="{ item }">
@@ -59,12 +59,14 @@
 
 <script>
 import { getBookList } from '../common/bookservice'
+import { KindMap } from '../common/config'
+import { hasOwn } from '../util'
 
 export default {
   name: 'bookList',
   data: () => ({
     rangList: [ 5, 10, 15, 20, '全部' ],
-    page: 1, pageCount: 0, itemsPerPage: 5, itemsPerPage_: 5,
+    page: 1, pageCount: 0, itemsPerPage: 10, itemsPerPage_: 10,
     search: '',
     selected: [],
     headers: [
@@ -74,16 +76,23 @@ export default {
         sortable: false,
       },
       { text: '作者', value: 'author', sortable: false, },
-      { text: '分类', value: 'category', sortable: false, },
+      { 
+        text: '分类', 
+        value: 'category', 
+        sortable: false, 
+        width: '9%'
+      },
       {
         text: '展示价',
-        value: 'p1',
-        width: '12%'
+        value: 'listPrice',
+        width: '8%', align: 'center',
+        sortable: false,
       },
       {
         text: '售价',
-        value: 'p2',
-        width: '11%'
+        value: 'ourPrice',
+        width: '8%', align: 'center',
+        sortable: false,
       },
       { 
         text: '展示?', 
@@ -104,6 +113,7 @@ export default {
   }),
   watch: {
     itemsPerPage_(newv, oldv) {
+      this.page = 1;
       if (newv === '全部') {
         this.itemsPerPage = this.booklist.length + 1;
       } else {
@@ -117,12 +127,26 @@ export default {
       let r = this.page * this.itemsPerPage;
       return `共 ${this.booklist.length} 个元素中第 ${l} 个到第 ${Math.min(r, this.booklist.length)} 个`;
     },
-    getUrl(title) {
-      return `/book/bookInfo?id=${title}`;
+    getUrl(id) {
+      return `/book/bookInfo?id=${id}`;
+    },
+    cnKind(val) {
+      if (!val) return '';
+      if (hasOwn(KindMap, val)) return KindMap[val];
+      return '';
     }
   },
-  mounted() {
-    this.booklist = getBookList();
+  created() {
+    getBookList(1, 10000000)
+      .then(function(data) {
+        if (hasOwn(data, 'status')) {
+          return ;
+        }
+        for (let item of data) {
+          item.category = this.cnKind(item.category);
+        }
+        this.booklist = data;
+      }.bind(this));
   }
 }
 </script>

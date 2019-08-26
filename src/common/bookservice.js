@@ -1,3 +1,5 @@
+import api from './apiservice'
+
 function addBook() {
 
 }
@@ -6,28 +8,33 @@ function editBook(id) {
 
 }
 
-function getBookList() {
-  return [
-    {
-      title: 'test1', author: 'admin',
-      p1: 1, p2: 2,
-      category: 'programming', active: 'true'
-    },
-    {
-      title: 'test2', author: 'root',
-      p1: 1, p2: 2,
-      category: 'management', active: 'true'
-    },
-    {
-      title: 'test3', author: 'hzy',
-      p1: 1, p2: 2,
-      category: 'fiction', active: 'false'
-    }
-  ];
+async function getBookList(l, r) {
+  try {
+    let res = await api.get('/booklist', {  
+      params: { l, r, cookie: api.getCookie('login') }
+    });
+    return res.data;
+  } catch(err) {
+    return { status: 'error' }
+  }
+}
+
+async function getBookInfo(id) {
+  try {
+    let res = await api.get(`/book/${id}`, {
+      params: {
+        cookie: api.getCookie('login')
+      }
+    });
+    return res.data;
+  } catch(err) {
+    return { status: 'error' };
+  }
 }
 
 export {
   addBook,
   editBook,
-  getBookList
+  getBookList,
+  getBookInfo
 };
