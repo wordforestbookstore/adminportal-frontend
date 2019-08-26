@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import { checkLogin } from './common/userservice'
+import { hasOwn } from './util'
 
 Vue.use(VueRouter);
 
@@ -29,7 +30,26 @@ export default new VueRouter({
           component: resolve => require(['./components/booklist.vue'], resolve)
         },
         {
-          path: 'bookInfo'
+          path: 'bookInfo',
+          component: resolve => require(['./components/bookinfo.vue'], resolve),
+          beforeEnter: (to, from, next) => {
+            if (hasOwn(to.query, 'id')) {
+              next();
+            } else {
+              next('/book');
+            }
+          }
+        },
+        {
+          path: 'updateBook',
+          component: resolve => require(['./components/edit.vue'], resolve),
+          beforeEnter: (to, from, next) => {
+            if (hasOwn(to.query, 'id')) {
+              next();
+            } else {
+              next('/book');
+            }
+          }
         }
       ],
       beforeEnter: (to, from, next) => {
