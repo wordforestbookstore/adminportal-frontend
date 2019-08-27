@@ -5,8 +5,8 @@
     <v-text-field v-model="book.author" :rules="rules.author"
       label="* 作者" required></v-text-field>
 
-    <v-text-field v-model="book.isbn" type="number"
-      label="ISBN"></v-text-field>
+    <v-text-field v-model="book.isbn" type="number" :rules="rules.isbn"
+      label="* ISBN"></v-text-field>
 
     <v-text-field v-model="book.publisher"
       label="出版社"></v-text-field>
@@ -148,11 +148,10 @@
     <v-btn text class="mb-5" @click="editDescription">使用编辑器打开书籍简介</v-btn>
 
     <v-file-input
-      v-model="book.image"
-      accept="image/png, image/jpeg, image/bmp"
+      v-model="image"
+      accept="image/png" :rules="rules.image"
       label="封面" 
-      placeholder="上传书籍封面"
-      prepend-icon="mdi-paperclip">
+      placeholder="上传书籍封面">
       <template v-slot:selection="{ text }">
         <v-chip small label color="primary">{{ text }}</v-chip>
       </template>
@@ -186,7 +185,9 @@ export default {
     rules: {
       title: BookRules.title,
       author: BookRules.author,
-      category: BookRules.category
+      isbn: BookRules.isbn,
+      category: BookRules.category,
+      image: BookRules.image
     },
     dateMenu: false,
     langList: LangList, kindList: KindList, formatList: FormatList,
@@ -200,8 +201,8 @@ export default {
       ourPrice: 1, inStockNumber: 0,
       active: true, 
       description: '',
-      image: null
-    }
+    }, 
+    image: null
   }),
   methods: {
     editDescription() {
@@ -221,9 +222,9 @@ export default {
     async submitForm() {
       let res = null;
       if (this.updateID !== null) {
-        res = await editBook(this.updateID, this.book);
+        res = await editBook(this.updateID, this.book, this.image);
       } else {
-        res = await addBook(this.book);
+        res = await addBook(this.book, this.image);
       }
       if (hasOwn(res, 'status') && res.status === 'error') {
         this.snackbar.text = res.message;

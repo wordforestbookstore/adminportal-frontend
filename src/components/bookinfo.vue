@@ -8,13 +8,16 @@
       <v-divider></v-divider>
       <v-card-text>
         <v-row>
+          <v-col cols="3" align-self="center">
+            <v-img :src="getImage"></v-img>
+          </v-col>
           <v-col cols="9">
             <v-row>
-              <v-col><div class="table-key font-weight-bold">作者</div> {{ info.author }}</v-col>
+              <v-col><div class="font-weight-bold">作者</div> {{ info.author }}</v-col>
               <v-col><div class="font-weight-bold">规格</div> {{ info.format | formatF }}</v-col>
             </v-row>
             <v-row>
-              <v-col><div class="table-key font-weight-bold">出版社</div> {{ info.publisher }}</v-col>
+              <v-col><div class="font-weight-bold">出版社</div> {{ info.publisher }}</v-col>
               <v-col><div class="font-weight-bold">ISBN</div> {{ info.isbn }}</v-col>
             </v-row>
             <v-row>
@@ -34,11 +37,8 @@
               <v-col><div class="font-weight-bold">库存量</div> {{ info.inStockNumber }} 本</v-col>
             </v-row>
           </v-col>
-          <v-col cols="3">
-
-          </v-col>
         </v-row>
-        <v-row>
+        <v-row class="mt-5">
           <v-col class="font-weight-bold">书籍简介</v-col>
         </v-row>
         <v-row>
@@ -54,7 +54,7 @@
 <script>
 import VueMarkdown from 'vue-markdown'
 import { getBookInfo } from '../common/bookservice'
-import { KindMap } from '../common/config'
+import { KindMap, API_URL } from '../common/config'
 import { hasOwn } from '../util'
 
 export default {
@@ -63,6 +63,10 @@ export default {
     info: {}, loading: false
   }),
   computed: {
+    getImage() {
+      if (!this.info.id) return '';
+      return `${API_URL}/img/${this.info.id}.png`;
+    },
     items() {
       return [
         {
@@ -121,9 +125,4 @@ export default {
 
 <style>
 @import '~github-markdown-css';
-
-#myInfo .table-key {
-  display: inline-block;
-  width: 5em;
-}
 </style>
