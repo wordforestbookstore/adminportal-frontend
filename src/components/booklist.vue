@@ -15,6 +15,7 @@
         ></v-text-field>
       </v-card-title>
       <v-data-table
+        :loading="loading" loading-text="加载中..."
         locale="zh-Hans"
         :page.sync="page"
         :items-per-page="itemsPerPage"
@@ -87,6 +88,7 @@ import { Promise } from 'q';
 export default {
   name: 'bookList',
   data: () => ({
+    loading: false,
     dialog: false, deleteids: [],
     rangList: [ 5, 10, 15, 20, '全部' ],
     page: 1, pageCount: 0, itemsPerPage: 10, itemsPerPage_: 10,
@@ -186,6 +188,7 @@ export default {
     }
   },
   created() {
+    this.loading = true;
     getBookList(1, 10000000)
       .then(function(data) {
         if (hasOwn(data, 'status') && data.status === 'error') {
@@ -195,6 +198,7 @@ export default {
           item.category = this.cnKind(item.category);
         }
         this.booklist = data;
+        this.loading = false;
       }.bind(this));
   }
 }
