@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import { checkLogin } from './common/userservice'
+import { checkLogin, userLogin } from './common/userservice'
 import { hasOwn } from './util'
 
 Vue.use(VueRouter);
 
-export default new VueRouter({
+const router =  new VueRouter({
   mode: 'history',
   routes: [
     {
@@ -51,14 +51,24 @@ export default new VueRouter({
             }
           }
         }
-      ],
-      beforeEnter: (to, from, next) => {
-        if (checkLogin()) {
-          next();
-        } else {
-          next('/login');
-        }
-      }
+      ]
     }
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  if (checkLogin() || to.path === '/') {
+    next();
+  } else {
+    userLogin()
+      .then((res) => {
+        if (hasOwn(res, 'status')) {
+          next('/');
+        } else {
+          next();
+        }
+      });
+  }
+});
+
+export default router;

@@ -83,7 +83,7 @@
 import { getBookList, deleteBook } from '../common/bookservice'
 import { KindMap } from '../common/config'
 import { hasOwn } from '../util'
-import { Promise } from 'q';
+import { Promise } from 'q'
 
 export default {
   name: 'bookList',
