@@ -15,7 +15,10 @@ async function userLogin(obj) {
     once = true;
     try {
       let res = await api.get('/login', { 
-        params: { cookie: api.getCookie('login') }
+        params: { 
+          cookie: api.getCookie('login'),
+          admin: true
+        }
       });
       return user = res.data;
     } catch(err) {
@@ -24,7 +27,11 @@ async function userLogin(obj) {
     }
   } else {
     try {
-      let res = await api.post('/login', obj);
+      let res = await api.post('/login', obj, {
+        params: {
+          admin: true
+        }
+      });
       user = res.data.userInfo;
       api.setCookie('login', res.data.cookieID);
       return user;
@@ -44,7 +51,9 @@ async function userLogin(obj) {
 }
 
 function userLogout() {
-  api.post('/logout').catch(() => {});
+  api.post('/logout', {}, {
+    params: { cookie: api.getCookie('login') }
+  }).catch(() => {});
   user = null;
   once = false;
   api.removeCookie('login');
