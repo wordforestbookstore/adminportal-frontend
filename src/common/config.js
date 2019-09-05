@@ -1,4 +1,4 @@
-export const API_URL = 'http://192.168.1.102:8080';
+export const API_URL = 'http://49.235.51.43:8080';
 
 export const LangList = [
   {
@@ -11,7 +11,7 @@ export const LangList = [
 
 export const FormatList = [
   {
-    text: '软装', value: 'paperback'
+    text: '平装', value: 'paperback'
   },
   {
     text: '精装', value: 'hardback'
@@ -33,7 +33,16 @@ export const KindList = [
   },
   {
     text: '美术和文学', value: 'Arts & Literature'
-  }
+  },
+  {
+    text: '哲学', value: 'Philosophy'
+  },
+  {
+    text: '工具书', value: 'Reference Books'
+  },
+  {
+    text: '人物传记', value: 'Biography'
+  },
 ];
 
 let KindMap = {};

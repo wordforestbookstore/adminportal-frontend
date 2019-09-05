@@ -41,7 +41,7 @@
     <v-slider label="总页数"
       v-model="book.numberOfPages"
       class="align-center py-2"
-      max="2000" min="1"
+      max="3000" min="1"
       hide-details>
       <template v-slot:label>
         <span class="pr-4">总页数</span>
@@ -62,7 +62,7 @@
     <v-slider label="邮寄重量"
       v-model="book.shippingWeight"
       class="align-center py-2"
-      max="2000" min="1"
+      max="15000" min="1"
       hide-details>
       <template v-slot:append>
         <v-text-field
@@ -80,7 +80,7 @@
     <v-slider label="展示价格"
       v-model="book.listPrice"
       class="align-center py-2"
-      max="1000" min="0" step="0.01"
+      max="2000" min="0" step="0.01"
       hide-details>
       <template v-slot:append>
         <v-text-field
@@ -98,7 +98,7 @@
     <v-slider label="售价"
       v-model="book.ourPrice"
       class="align-center py-2"
-      max="1000" min="0" step="0.01"
+      max="2000" min="0" step="0.01"
       hide-details>
       <template v-slot:label>
         <span class="pr-4 mr-4">售价</span>
@@ -119,7 +119,7 @@
     <v-slider label="库存量"
       v-model="book.inStockNumber"
       class="align-center pt-2"
-      max="1000" min="0"
+      max="10000" min="0"
       hide-details>
       <template v-slot:label>
         <span class="pr-4">库存量</span>
