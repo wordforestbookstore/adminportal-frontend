@@ -9,7 +9,7 @@ function uploadImage(id, obj) {
       headers: {'Content-Type':'multipart/form-data'}
     });
   } catch(err) {
-
+    return { status: 'error' };
   }
 }
 
