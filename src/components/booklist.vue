@@ -1,9 +1,9 @@
 <template>
-  <v-container>
+  <v-container ref="booklist">
     <v-card flat>
       <v-card-title>
         <v-col cols="2">
-          <v-select label="每页元素" v-model="itemsPerPage_" :items="rangList" hide-details>
+          <v-select label="每页元素" v-model="itemsPerPage_" :items="rangeList" hide-details>
           </v-select>
         </v-col>
         <v-spacer></v-spacer>
@@ -90,7 +90,7 @@ export default {
   data: () => ({
     loading: false,
     dialog: false, deleteids: [],
-    rangList: [ 5, 10, 15, 20, '全部' ],
+    rangeList: [ 5, 10, 15, 20, '全部' ],
     page: 1, pageCount: 0, itemsPerPage: 10, itemsPerPage_: 10,
     search: '',
     selected: [],
@@ -138,15 +138,36 @@ export default {
   }),
   watch: {
     itemsPerPage_(newv) {
-      this.page = 1;
-      if (newv === '全部') {
+      if (this.rangeList.indexOf(newv) === -1) {
+        this.itemsPerPage = 10;
+      } else if (newv === '全部') {
         this.itemsPerPage = this.booklist.length + 1;
       } else {
         this.itemsPerPage = newv;
       }
+      this.page = 1;
+      this.changeUrl(1);
+    },
+    page(newV) {
+      this.changeUrl(newV);
     }
   },
   methods: {
+    changeUrl(newV) {
+      this.$vuetify.goTo(this.$refs.booklist);
+      let query = {};
+      query.page = String(newV);
+      if (this.itemsPerPage_ === '全部') {
+        query.perpage = 'all';
+      } else {
+        query.perpage = String(this.itemsPerPage_);
+      }
+      if (query.page !== this.$route.query.page || query.perpage !== this.$route.query.perpage) {
+        this.$router.push({
+          path: '/book/bookList', query
+        });
+      }
+    },
     getRange() {
       let l = (this.page - 1) * this.itemsPerPage + 1;
       let r = this.page * this.itemsPerPage;
@@ -154,7 +175,13 @@ export default {
       return `共 ${this.booklist.length} 个元素中第 ${l} 个到第 ${Math.min(r, this.booklist.length)} 个`;
     },
     getUrl(id) {
-      return `/book/bookInfo?id=${id}`;
+      return {
+        name: 'bookinfo',
+        query: { id },
+        params: {
+          redirect: this.$route.fullPath
+        }
+      };
     },
     goEdit(id) {
       this.$router.push(`/book/updateBook?id=${id}`)
@@ -198,8 +225,19 @@ export default {
           item.category = this.cnKind(item.category);
         }
         this.booklist = data;
+        if (hasOwn(this.$route.query, 'page') && hasOwn(this.$route.query, 'perpage')) {
+          if (this.$route.query.perpage === 'all') {
+            this.itemsPerPage_ = '全部';
+          } else {
+            this.itemsPerPage_ = Number(this.$route.query.perpage);
+          }
+          this.page = Number(this.$route.query.page);
+        }
         this.loading = false;
       }.bind(this));
+  },
+  mounted() {
+    this.$vuetify.goTo(this.$refs.booklist);
   }
 }
 </script>

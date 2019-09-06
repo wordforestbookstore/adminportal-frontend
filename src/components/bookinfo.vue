@@ -73,7 +73,7 @@ export default {
           text: '返回',
           disabled: false,
           exact: true,
-          to: '/book/bookList'
+          to: hasOwn(this.$route.params, 'redirect') ? this.$route.params.redirect : '/book/bookList'
         },
         {
           text: '编辑',

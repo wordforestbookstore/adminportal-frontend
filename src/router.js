@@ -31,6 +31,7 @@ const router =  new VueRouter({
         },
         {
           path: 'bookInfo',
+          name: 'bookinfo',
           component: resolve => require(['./components/bookinfo.vue'], resolve),
           beforeEnter: (to, from, next) => {
             if (hasOwn(to.query, 'id')) {
