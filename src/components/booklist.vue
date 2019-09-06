@@ -48,7 +48,9 @@
           <v-container>
             <v-row>
               <v-col cols="3" align-self="center" class="caption">{{ getRange() }}</v-col>
-              <v-col cols="6"><v-pagination v-model="page" :length="pageCount"></v-pagination></v-col>
+              <v-col cols="6" v-if="!loading">
+                <v-pagination v-model="page" :length="pageCount"></v-pagination>
+              </v-col>
               <v-col cols="3" class="text-end">
                 <v-btn color="error" @click="selectDelete">删除选中项</v-btn>
               </v-col>
@@ -146,7 +148,6 @@ export default {
         this.itemsPerPage = newv;
       }
       this.page = 1;
-      this.changeUrl(1);
     },
     page(newV) {
       this.changeUrl(newV);
@@ -231,9 +232,11 @@ export default {
           } else {
             this.itemsPerPage_ = Number(this.$route.query.perpage);
           }
-          this.page = Number(this.$route.query.page);
+          this.$nextTick(() => {
+            this.page = Number(this.$route.query.page);
+            this.loading = false;
+          });
         }
-        this.loading = false;
       }.bind(this));
   },
   mounted() {
