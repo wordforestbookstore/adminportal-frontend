@@ -58,7 +58,7 @@ async function deleteBook(id) {
 
 async function getBookList(l, r) {
   try {
-    let res = await api.get('/booklist', {  
+    let res = await api.get('/adminbooklist', {  
       params: { l, r, cookie: api.getCookie('login') }
     });
     return res.data;
